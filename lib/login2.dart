@@ -102,7 +102,7 @@ class _LoginPage2State extends State<LoginPage2> {
           headers: <String, String>{
             'Content-Type': 'application/json',
             'Authorization':
-                'key =AAAAcfy3p7A:APA91bFJvFL6QkcvKT0_hCLShLT4tNpQWiQYenvfl-414Az9KUC0_234cRpUNvIJKU3OUiLCqe8_DBhJh1k943o2483tj0VpsW8aOGwrIHeq4Uc-62VFiDAlYDdA1bena4VYxPAtYEs8'
+                'key =AAAAPenv4LI:APA91bGL1CBHHemT7ng4U976UqatzRtnyB-SWAUXkguoaeOP79FTFWe-JzzFZ7s_gN0VZog7OihHYomukJbN03oNtd-fyJ5bJ3X2iHvY7DBk4PN4JKj5HuZoeESpdvi53XIVjxgngHgw'
           },
           body: jsonEncode(<String, dynamic>{
             'priority': 'high',
@@ -115,7 +115,7 @@ class _LoginPage2State extends State<LoginPage2> {
             "notification": <String, dynamic>{
               "title": "Welcome $name",
               "body": "Enjoy your food",
-              "android_channel_id": "foodD"
+              "android_channel_id": "Fast Food"
             },
             "to": tocken
           }));
