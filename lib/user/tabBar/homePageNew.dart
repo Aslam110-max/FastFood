@@ -84,11 +84,13 @@ class _HomePageNewState extends State<HomePageNew> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   SizedBox(width: Dimensions.width120*0.05,),
-                  Image.asset(
-                    'image/logoNew.png',
-                    height: Dimensions.topLogoHeight,
-                    width: Dimensions.topLogoWidth,
-                  ),
+                  Text(
+                      'Fast Food',
+                      style: TextStyle(
+                          color: ColorClass.mainColor,
+                          fontFamily: "ConcertOne",
+                          fontSize: Dimensions.height10 *1.4,fontWeight:FontWeight.w700 ),
+                    ),
                   IconButton(
                       onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context)=>Notifications()));},
                       icon: Icon(Icons.notifications,
