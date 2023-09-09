@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "265917817010",
+    "firebase_url": "https://fastfood-ceedb-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "fastfood-ceedb",
+    "storage_bucket": "fastfood-ceedb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:265917817010:android:8c65db187cba71f1fc29ab",
+        "android_client_info": {
+          "package_name": "com.am.fastfood"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "265917817010-hil9olhhjtjvvd0nvh0ta3rk5vfchpna.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCi0b1wqg51EQQ9tqPD-lrKKPiCc2nGwk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "265917817010-hil9olhhjtjvvd0nvh0ta3rk5vfchpna.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
