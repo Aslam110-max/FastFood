@@ -45,7 +45,7 @@ dependencies:
   url_launcher: ^6.1.5
   carousel_slider: ^4.2.1
   firebase_messaging:
-  flutter_local_notifications:
+  flutter_local_notifications: ^15.1.1
   flutter_native_splash:
   smooth_page_indicator: ^1.0.0+2
   sqflite: ^2.2.3

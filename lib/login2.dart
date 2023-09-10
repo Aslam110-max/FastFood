@@ -28,29 +28,7 @@ class _LoginPage2State extends State<LoginPage2> {
     // TODO: implement initState
     super.initState();
     requestPermission();
-    FlutterLocalNotificationsPlugin _notificationPlugins =
-        FlutterLocalNotificationsPlugin();
-    final InitializationSettings initializationSettings =
-        InitializationSettings(
-            android: AndroidInitializationSettings("@mipmap/ic_launcher"));
-    _notificationPlugins.initialize(initializationSettings);
-    FirebaseMessaging.instance.getInitialMessage();
-    FirebaseMessaging.onMessage.listen((message) async {
-      final id = DateTime.now().microsecondsSinceEpoch ~/ 10000000;
-      final NotificationDetails notificationDetails = NotificationDetails(
-          android: AndroidNotificationDetails("foodD", "foodD channel",
-              importance: Importance.max, priority: Priority.high));
-      if (message.notification != null) {
-        print(message.notification!.title);
-        print(message.notification!.body);
-      }
-      try {
-        await _notificationPlugins.show(id, message.notification!.title,
-            message.notification!.body, notificationDetails);
-      } catch (e) {
-        print('Nerro: $e');
-      }
-    });
+  
   }
 
 
@@ -111,6 +89,7 @@ class _LoginPage2State extends State<LoginPage2> {
               'status': 'done',
               'body': 'Enjoy your food',
               'title': 'Welcome $name',
+              'screen': 'your_target_screen'
             },
             "notification": <String, dynamic>{
               "title": "Welcome $name",
