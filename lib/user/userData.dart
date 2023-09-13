@@ -12,9 +12,9 @@ class UserData {
   static late List orderUserList;
   static late List ordersList;
   static late List adImageUrlList;
-  static late List hotelList;
+  static  List hotelList=[];
   static late List dinnerMenuList;
   static late List lunchMenuList;
   static late int index;
-  static late int adminContactNumber;
+  static String adminContactNumber="";
 }

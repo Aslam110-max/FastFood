@@ -1,4 +1,6 @@
 
+import 'package:fastfood/user/hotelMenu/hotelMenu.dart';
+import 'package:fastfood/user/tabBar/cart/cart.dart';
 import 'package:flutter/material.dart';
 
 import '../colors.dart';
@@ -19,7 +21,7 @@ class ImageReturn{
   NetworkImage Rimage(){return images;}
 }
 class _LunchState extends State<Lunch> {
-  List<Map<String,dynamic>> _orders=[];
+  
   late bool loaded;
   int total = 0;
   late final lunchCountController;
@@ -30,13 +32,20 @@ class _LunchState extends State<Lunch> {
   Future<void> _refreshOrders()async{
     final data = await OrderHelper.getItems();
     setState(() {
-      _orders = data;
+       HotelMenuNew.orders = data;
+       HotelMenuNew.totalAmount =0;
     });
+     for(int i=0;i<HotelMenuNew.orders.length;++i)
+    {
+      setState(() {
+         HotelMenuNew.totalAmount =  HotelMenuNew.totalAmount+(HotelMenuNew.orders[i]['price']*HotelMenuNew.orders[i]['foodCount']);
+      });
+    }
   }
   Future<void> _addItem(String foodName,String hotelName,String foodWidth,double price,int foodCount,String imageUrl)async{
     await OrderHelper.createItem(foodName, hotelName, foodWidth, price,foodCount,'Lunch',imageUrl);
     _refreshOrders();
-    print('Number Of items is ${_orders.length}');
+    
   }
   Future<void> _loadLunchData() async {
     if(UserData.hotelDataMap['${UserData.hotelList[UserData.index]}']['Menu']['Lunch']!=null)
@@ -65,146 +74,214 @@ class _LunchState extends State<Lunch> {
     // TODO: implement initState
     super.initState();
     _loadLunchData();
+    _refreshOrders();
   }
   @override
   Widget build(BuildContext context) {
     return loaded
         ? !noLunchData
-        ? Padding(
+        ? Stack(
+          children: [
+            Padding(
       padding: EdgeInsets.only(right: Dimensions.height10,left: Dimensions.height10),
       child: ListView.builder(
-        itemBuilder: (_,i){
-          final imageReturn = new ImageReturn(images: NetworkImage(UserData
-              .lunchMenuDataMap[UserData
-              .lunchMenuList[
-          i]]['ImageUrl'] as String,));
-          return Container(
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            itemBuilder: (_,i){
+              final imageReturn = new ImageReturn(images: NetworkImage(UserData
+                  .lunchMenuDataMap[UserData
+                  .lunchMenuList[
+              i]]['ImageUrl'] as String,));
+              return Container(
+                  child: Column(
                     children: [
-                      Padding(
-                        padding: EdgeInsets.all(Dimensions.height10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              width: Dimensions.width120*2,
-                              child: Text(
-                                "${UserData.lunchMenuList[i]}",style: 
-                                TextStyle(
-                                  overflow: TextOverflow.ellipsis,
-                                  color: Colors.black,fontSize: Dimensions.height10*1.2,fontWeight: FontWeight.w600),)),
-                            SizedBox(height: Dimensions.height10,),
-                            SizedBox(width: Dimensions.width120*1.5,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text("Normal:",style: TextStyle(color: Colors.black38,fontSize: Dimensions.height10),),
-                                  Text(" Rs.${UserData.lunchMenuDataMap[UserData.lunchMenuList[i]]['NormalPrice']}",style: TextStyle(color: Colors.black,fontSize: Dimensions.height10))
-                                ],
-                              )),
-                             SizedBox(width: Dimensions.width120*1.5,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text("Full:",style: TextStyle(color: Colors.black38,fontSize: Dimensions.height10),),
-                                  Text(" Rs.${UserData.lunchMenuDataMap[UserData.lunchMenuList[i]]['FullPrice']}",style: TextStyle(color: Colors.black,fontSize: Dimensions.height10))
-                                ],
-                              )),
-                          ],
-                        ),
-                      ),
-                      Column(
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                         Stack(
-                          children: [
-                            Container(
-                              height: Dimensions.height120*1.2,
-                              width: Dimensions.topDesignHeight,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                              image:imageReturn.Rimage(),fit: BoxFit.cover),
-                                
-                                borderRadius: BorderRadius.circular(Dimensions.height10),
-                                
-                              ),
+                          Padding(
+                            padding: EdgeInsets.all(Dimensions.height10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  width: Dimensions.width120*2,
+                                  child: Text(
+                                    "${UserData.lunchMenuList[i]}",style: 
+                                    TextStyle(
+                                      overflow: TextOverflow.ellipsis,
+                                      color: Colors.black,fontSize: Dimensions.height10*1.2,fontWeight: FontWeight.w600),)),
+                                SizedBox(height: Dimensions.height10,),
+                                SizedBox(width: Dimensions.width120*1.5,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text("Normal:",style: TextStyle(color: Colors.black38,fontSize: Dimensions.height10),),
+                                      Text(" Rs.${UserData.lunchMenuDataMap[UserData.lunchMenuList[i]]['NormalPrice']}",style: TextStyle(color: Colors.black,fontSize: Dimensions.height10))
+                                    ],
+                                  )),
+                                 SizedBox(width: Dimensions.width120*1.5,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text("Full:",style: TextStyle(color: Colors.black38,fontSize: Dimensions.height10),),
+                                      Text(" Rs.${UserData.lunchMenuDataMap[UserData.lunchMenuList[i]]['FullPrice']}",style: TextStyle(color: Colors.black,fontSize: Dimensions.height10))
+                                    ],
+                                  )),
+                              ],
                             ),
-                            Container(
-                               height: Dimensions.height120*1.3,
-                                width: Dimensions.topDesignHeight,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  GestureDetector(
-                                    onTap: (){
-                                      if(UserData.lunchMenuDataMap[UserData.lunchMenuList[i]]['FullPrice']==null) {
-                            setState(() {
-                            UserData.hotelDataMap[UserData
-                                .hotelList[UserData.index]]
-                            ['HotelState'] ==
-                                'Open'?showModalBottomSheet(
-                                backgroundColor: Colors.transparent,
-                                context: context,
-                                builder: (BuildContext context)
-                                {
-                                  return NoneCustomizableBottomSheet(context,i,imageReturn.Rimage());}):showHotelClosedSnackBar(context);
-                          });
-                          } else if(UserData.lunchMenuDataMap[UserData.lunchMenuList[i]]['FullPrice']!=null) {
-                            UserData.hotelDataMap[UserData
-                                .hotelList[UserData.index]]
-                            ['HotelState'] ==
-                                'Open'?
-                            showModalBottomSheet(
-                                backgroundColor: Colors.transparent,
-                                context: context,
-                                builder: (BuildContext context)
-                                {
-                                  return CustomizableBottomSheet(context,i,imageReturn.Rimage());}):showHotelClosedSnackBar(context);
-                          }
-                                    },
-                                    child: Container(
-                                                              height: Dimensions.height10*3,
-                                                              width: Dimensions.width120*1.3,
-                                                              decoration: BoxDecoration(
-                                    border: Border.all(color: ColorClass.mainColor),
-                                    color: Colors.white,
+                          ),
+                          Column(
+                            children: [
+                             Stack(
+                              children: [
+                                Container(
+                                  height: Dimensions.height120*1.2,
+                                  width: Dimensions.topDesignHeight,
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                  image:imageReturn.Rimage(),fit: BoxFit.cover),
+                                    
                                     borderRadius: BorderRadius.circular(Dimensions.height10),
                                     
-                                                              ),
-                                                              child: Center(
-                                                          child: Text('Add',style: TextStyle(color: ColorClass.mainColor),),)
-                                                      
-                                                            ),
                                   ),
-                                ],
-                              ),
-                            )
-                          ],
-                         )
+                                ),
+                                Container(
+                                   height: Dimensions.height120*1.3,
+                                    width: Dimensions.topDesignHeight,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: (){
+                                          if(UserData.lunchMenuDataMap[UserData.lunchMenuList[i]]['FullPrice']==null) {
+                                setState(() {
+                                UserData.hotelDataMap[UserData
+                                    .hotelList[UserData.index]]
+                                ['HotelState'] ==
+                                    'Open'?showModalBottomSheet(
+                                    backgroundColor: Colors.transparent,
+                                    context: context,
+                                    builder: (BuildContext context)
+                                    {
+                                      return NoneCustomizableBottomSheet(context,i,imageReturn.Rimage());}):showHotelClosedSnackBar(context);
+                              });
+                              } else if(UserData.lunchMenuDataMap[UserData.lunchMenuList[i]]['FullPrice']!=null) {
+                                UserData.hotelDataMap[UserData
+                                    .hotelList[UserData.index]]
+                                ['HotelState'] ==
+                                    'Open'?
+                                showModalBottomSheet(
+                                    backgroundColor: Colors.transparent,
+                                    context: context,
+                                    builder: (BuildContext context)
+                                    {
+                                      return CustomizableBottomSheet(context,i,imageReturn.Rimage());}):showHotelClosedSnackBar(context);
+                              }
+                                        },
+                                        child: Container(
+                                                                  height: Dimensions.height10*3,
+                                                                  width: Dimensions.width120*1.3,
+                                                                  decoration: BoxDecoration(
+                                        border: Border.all(color: ColorClass.mainColor),
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(Dimensions.height10),
+                                        
+                                                                  ),
+                                                                  child: Center(
+                                                              child: Text('Add',style: TextStyle(color: ColorClass.mainColor),),)
+                                                          
+                                                                ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              ],
+                             )
+                            ],
+                          )
                         ],
-                      )
+                      ),
+                    Divider(
+                      color: Colors.grey.shade600,
+                    )
                     ],
                   ),
-                Divider(
-                  color: Colors.grey.shade600,
-                )
-                ],
-              ),
-            );
-        },
-        itemCount: UserData.lunchMenuList.length,
-        shrinkWrap: true,physics: const NeverScrollableScrollPhysics(),
-        
+                );
+            },
+            itemCount: UserData.lunchMenuList.length,
+            shrinkWrap: true,physics: const NeverScrollableScrollPhysics(),
+            
       ),
-    )
-        : const Center(
+    ),
+           if(HotelMenuNew.orders.length>0)
+        Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(bottom: Dimensions.height10*3),
+              child: Center(
+                child: Container(
+                  height: Dimensions.height10*5.5,
+                  width: Dimensions.width120*4.5,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(Dimensions.height10),
+                    boxShadow: [BoxShadow(
+                      color: Colors.black38,
+                      blurRadius: Dimensions.height10*0.1
+                    )],
+                    color: Colors.white
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.all(Dimensions.height10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SizedBox(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text("${HotelMenuNew.orders.length} Items",style: TextStyle(fontSize: Dimensions.height10,fontWeight: FontWeight.w500),),
+                              Text("Rs. ${HotelMenuNew.totalAmount}",style: TextStyle(fontSize: Dimensions.height10*1.2,fontWeight: FontWeight.w700))
+                            ],
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: (){
+                            Navigator.push(context, MaterialPageRoute(builder: (context)=>const Cart()));
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(Dimensions.height10),
+                              color: ColorClass.mainColor
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.all(Dimensions.height10),
+                              child: Row(
+                                children: [
+                                  Text("Cart",style: TextStyle(fontSize: Dimensions.height10*1.2,color: Colors.white,fontWeight: FontWeight.w600),),
+                                  Icon(Icons.arrow_back_ios_outlined,textDirection: TextDirection.rtl,size: Dimensions.height10*1.1,color: Colors.white,)
+                                ],
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            
+          ],
+        )
+
+          ],
+        )
+        : Center(
       child: Text(
         'Empty',
         style: TextStyle(
-            fontSize: 50,
+            fontSize: Dimensions.height10,
             color: Colors.black45),
       ),
     )

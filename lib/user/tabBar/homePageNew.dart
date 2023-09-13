@@ -50,9 +50,15 @@ class _HomePageNewState extends State<HomePageNew> {
             child: ListView(
               children: [
                 DrawerHeader(
-                    child: Center(
-                        child: Image.asset('image/logoNew.png',height: Dimensions.topLogoHeight*2,width: Dimensions.topLogoWidth*2,)
-                    )
+                    child:Center(
+                      child: Text(
+                        'Fast Food',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontFamily: "ConcertOne",
+                            fontSize: Dimensions.height10 *3,fontWeight:FontWeight.w700 ),
+                      ),
+                    ),
                 ),
                 ListTile(
                   onTap: (){ Navigator.pushAndRemoveUntil(
@@ -66,8 +72,8 @@ class _HomePageNewState extends State<HomePageNew> {
                 ),
                 ListTile(
                   onTap: (){
-                   /* launch(
-                        'tel://${UserData.adminContactNumber}');*/
+                   launch(
+                        'tel://${UserData.adminContactNumber}');
                   },
                   title: Text('Contact Us',style: TextStyle(color: Colors.white),),
                   leading: Icon(Icons.numbers_outlined,color: Colors.white,),
@@ -91,10 +97,7 @@ class _HomePageNewState extends State<HomePageNew> {
                           fontFamily: "ConcertOne",
                           fontSize: Dimensions.height10 *1.4,fontWeight:FontWeight.w700 ),
                     ),
-                  IconButton(
-                      onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context)=>Notifications()));},
-                      icon: Icon(Icons.notifications,
-                          color: Colors.black))
+                 
                 ],
               ),
               pinned: true,
@@ -136,21 +139,25 @@ class _HomePageNewState extends State<HomePageNew> {
                                   for(int i=0;i<UserData.hotelDataMap.length;++i){
                                     List hotelNames = UserData.hotelDataMap.keys.toList();
                                     for(String hotel in hotelNames){
-                                      Map dinnerMenu = UserData.hotelDataMap[hotel]["Menu"]["Dinner"] as Map;
+                                     if(UserData.hotelDataMap[hotel]["Menu"]["Dinner"]!=null){
+                                       Map dinnerMenu = UserData.hotelDataMap[hotel]["Menu"]["Dinner"] as Map;
                                       List dinnerMenuList = dinnerMenu.keys.toList();
                                       for(String dinnerFood in dinnerMenuList){
                                         if(dinnerFood.toLowerCase().contains(val.toLowerCase())){
                                           searchedFood["${dinnerFood}_${hotel}_Dinner"] =UserData.hotelDataMap[hotel]["Menu"]["Dinner"][dinnerFood] as Map;
                                         }
                                       }
+                                     }
                                       ///////////for lunch////////////
-                                      Map lunchMenu = UserData.hotelDataMap[hotel]["Menu"]["Lunch"] as Map;
+                                     if( UserData.hotelDataMap[hotel]["Menu"]["Lunch"]!=null){
+                                       Map lunchMenu = UserData.hotelDataMap[hotel]["Menu"]["Lunch"] as Map;
                                       List lunchMenuList = lunchMenu.keys.toList();
                                       for(String lunchFood in lunchMenuList){
                                         if(lunchFood.toLowerCase().contains(val.toLowerCase())){
                                           searchedFood["${lunchFood}_${hotel}_Lunch"] =UserData.hotelDataMap[hotel]["Menu"]["Lunch"][lunchFood] as Map;
                                         }
                                       }
+                                     }
                                     }
                                   }
                                   seachedFoodList = searchedFood.keys.toList();

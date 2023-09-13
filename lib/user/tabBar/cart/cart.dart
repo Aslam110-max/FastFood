@@ -1,6 +1,8 @@
 
 import 'dart:convert';
 
+import 'package:fastfood/user/hotelMenu/hotelMenu.dart';
+import 'package:fastfood/user/userMain.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +28,7 @@ class _CartState extends State<Cart> {
   late final Map deliveryPercentage;
 
   
-  List<Map<String,dynamic>> _orders =[];
+  
   double _total=0;
   double _deliveryFee=0;
   bool _isLoading = true;
@@ -76,10 +78,10 @@ class _CartState extends State<Cart> {
       _deliveryFee =0;
       _total =0;
     });
-    for(int i=0;i<_orders.length;++i)
+    for(int i=0;i<HotelMenuNew.orders.length;++i)
     {
       setState(() {
-        _total = _total+(_orders[i]['price']*_orders[i]['foodCount']);
+        _total = _total+(HotelMenuNew.orders[i]['price']*HotelMenuNew.orders[i]['foodCount']);
       });
     }
   }
@@ -87,7 +89,7 @@ class _CartState extends State<Cart> {
     await _loadLocations();
     final data = await OrderHelper.getItems();
     setState(() {
-      _orders = data;
+       HotelMenuNew.orders = data;
       _isLoading =false;
     });
     _updateTotal();
@@ -116,175 +118,193 @@ TextEditingController _locationTextController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('My Cart',
-          style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold),),
-        centerTitle: true,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          IconButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context)=>Order()));}, icon: Icon(Icons.emoji_food_beverage_outlined,color: Colors.black,))
-        ],
-      ),
-      body: _isLoading? Center(child: CircularProgressIndicator(color: ColorClass.mainColor,),):
-      _orders.length != 0
-          ?
-      Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                child:
-                Expanded(
-                  child: ListView.builder(
-                  itemCount:_orders.length,
-                  itemBuilder: (context,i){
-                    final imageReturn = new ImageReturn(images: NetworkImage(_orders[i]['imageUrl']));
-                    return Padding(
-                      padding: EdgeInsets.only(right: Dimensions.height10,left: Dimensions.height10,bottom: Dimensions.height10),
-                      child: Container(
-                        decoration: BoxDecoration(
-                            boxShadow: [BoxShadow(color: Colors.black45,offset: Offset(0,3),blurRadius: 5)],
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15)
-                        ),
-                        height: Dimensions.height120,
-                        width: Dimensions.screenWidth,
-                        child: Stack(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.all(Dimensions.height10/2),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    height: Dimensions.height120,
-                                    width: Dimensions.width120*1.8,
-                                    decoration: BoxDecoration(
-                                        color: Colors.black26,
-                                        image: DecorationImage(image: imageReturn.Rimage(),fit: BoxFit.fill),
-                                        borderRadius: BorderRadius.circular(15)
-                                    ),
-                                  ),
-                                  SizedBox(width: Dimensions.width120*0.1,),
-                                  Container(
-                                    width: Dimensions.width120*2,
-                                    child:Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                                child: Text('${_orders[i]['foodName']}',style: TextStyle(fontSize: Dimensions.height10*1.3),overflow: TextOverflow.ellipsis,maxLines: 1,)),
-                                          ],
-                                        ),
-                                        Text('${_orders[i]['hotelName']}',style: TextStyle(fontSize: Dimensions.height10*0.9,color: Colors.black45),),
-                                        Text('${_orders[i]['foodWidth']}',style: TextStyle(fontSize: Dimensions.height10*0.9,color: Colors.black45),),
-                                        Text('${_orders[i]['foodType']}',style: TextStyle(fontSize: Dimensions.height10*0.9,color: Colors.black45),),
-                                        SizedBox(height: Dimensions.height10*1.5,),
-                                        Text('Rs.${_orders[i]['price']*_orders[i]['foodCount']}',style: TextStyle(fontSize: Dimensions.height10*1.3,fontWeight: FontWeight.bold),),
-                                      ],
-                                    ),),
-                                  Container(
-                                    height: Dimensions.height70*1.25,
-                                    width: Dimensions.width120*0.5,
-                                    decoration: BoxDecoration(
-                                        border: Border.all(color: ColorClass.mainColor),
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(Dimensions.height10/2)),
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        IconButton(onPressed: (){
-                                          _updateItem(_orders[i]['id'], '${_orders[i]['foodName']}', '${_orders[i]['hotelName']}', '${_orders[i]['foodWidth']}', _orders[i]['price'], _orders[i]['foodCount']+1,_orders[i]['foodType'],_orders[i]['imageUrl']);
-                                        },
-                                          icon: Icon(Icons.add),
-                                          padding: EdgeInsets.zero,
-                                          iconSize: Dimensions.height10*1.2,
-                                          color: ColorClass.mainColor,),
-                                        Text('${_orders[i]['foodCount']}',style: TextStyle(color: Colors.black,fontSize: Dimensions.height10),),
-                                        IconButton(onPressed: (){
-                                          if(_orders[i]['foodCount']>0){
-                                            _updateItem(_orders[i]['id'], '${_orders[i]['foodName']}', '${_orders[i]['hotelName']}', '${_orders[i]['foodWidth']}', _orders[i]['price'], _orders[i]['foodCount']-1,_orders[i]['foodType'],_orders[i]['imageUrl']);
-                                          }
-                                          if(_orders[i]['foodCount']==1) _deleteItem(_orders[i]['id']);
-                                        },
-                                          icon: Icon(Icons.remove),
-                                          iconSize: Dimensions.height10*1.2,
-                                          color: ColorClass.mainColor,)
-                                      ],),
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    );}
-              ),
-                ),
-              ),
-              Container(
-                height: Dimensions.height120*1.3,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black26,
-                      offset: Offset(0,-3),
-                      blurRadius: 5
-                    )
-                  ],
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(Dimensions.height10*1.5),
-                      topRight: Radius.circular(Dimensions.height10*1.5)
-                  )
-                ),
-                child: Padding(
-                  padding: EdgeInsets.only(top:Dimensions.height10,bottom: Dimensions.height10,right: Dimensions.height10*2,left: Dimensions.height10*2),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Column(children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('Total:',style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: Dimensions.height10*1.2),),
-                            Text('$_total',style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: Dimensions.height10*1.2),),
-                          ],
-                        ),
-                      ],),
-                      GestureDetector(
+    
+    return WillPopScope(
+      onWillPop:(){
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>UserMain()));
+        return emptyDialogBox();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          iconTheme: IconThemeData(color: Colors.black),
+          leading: BackButton(color: Colors.black,onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context)=>UserMain()));},),
+          title: Text('My Cart',
+            style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold),),
+          centerTitle: true,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          actions: [
+            IconButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context)=>Order()));}, icon: Icon(Icons.emoji_food_beverage_outlined,color: Colors.black,))
+          ],
+        ),
+        body: _isLoading? Center(child: CircularProgressIndicator(color: ColorClass.mainColor,),):
+        HotelMenuNew.orders.length != 0
+            ?
+        Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  child:
+                  Expanded(
+                    child: ListView.builder(
+                    itemCount:HotelMenuNew.orders.length,
+                    itemBuilder: (context,i){
+                      final imageReturn = new ImageReturn(images: NetworkImage(HotelMenuNew.orders[i]['imageUrl']));
+                      return Padding(
+                        padding: EdgeInsets.only(right: Dimensions.height10,left: Dimensions.height10,bottom: Dimensions.height10),
                         child: Container(
-                          height: Dimensions.height70*0.55,
                           decoration: BoxDecoration(
-                            border: Border.all(color: ColorClass.mainColor),
-                            borderRadius: BorderRadius.circular(20),
-                            color: Colors.white
+                              boxShadow: [BoxShadow(color: Colors.black45,offset: Offset(0,3),blurRadius: 5)],
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(15)
                           ),
-                          child: Center(
-                            child: Text('Continue',style: TextStyle(color: ColorClass.mainColor,fontSize: Dimensions.height10*1.3,fontWeight: FontWeight.bold),),
+                          height: Dimensions.height120,
+                          width: Dimensions.screenWidth,
+                          child: Stack(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.all(Dimensions.height10/2),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      height: Dimensions.height120,
+                                      width: Dimensions.width120*1.8,
+                                      decoration: BoxDecoration(
+                                          color: Colors.black26,
+                                          image: DecorationImage(image: imageReturn.Rimage(),fit: BoxFit.fill),
+                                          borderRadius: BorderRadius.circular(15)
+                                      ),
+                                    ),
+                                    SizedBox(width: Dimensions.width120*0.1,),
+                                    Container(
+                                      width: Dimensions.width120*2,
+                                      child:Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                  child: Text('${HotelMenuNew.orders[i]['foodName']}',style: TextStyle(fontSize: Dimensions.height10*1.3),overflow: TextOverflow.ellipsis,maxLines: 1,)),
+                                            ],
+                                          ),
+                                          Text('${HotelMenuNew.orders[i]['hotelName']}',style: TextStyle(fontSize: Dimensions.height10*0.9,color: Colors.black45),),
+                                          Text('${HotelMenuNew.orders[i]['foodWidth']}',style: TextStyle(fontSize: Dimensions.height10*0.9,color: Colors.black45),),
+                                          Text('${HotelMenuNew.orders[i]['foodType']}',style: TextStyle(fontSize: Dimensions.height10*0.9,color: Colors.black45),),
+                                          SizedBox(height: Dimensions.height10*1.5,),
+                                          Text('Rs.${HotelMenuNew.orders[i]['price']*HotelMenuNew.orders[i]['foodCount']}',style: TextStyle(fontSize: Dimensions.height10*1.3,fontWeight: FontWeight.bold),),
+                                        ],
+                                      ),),
+                                    Container(
+                                      height: Dimensions.height70*1.25,
+                                      width: Dimensions.width120*0.5,
+                                      decoration: BoxDecoration(
+                                          border: Border.all(color: ColorClass.mainColor),
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(Dimensions.height10/2)),
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          IconButton(onPressed: (){
+                                            _updateItem(
+                                              HotelMenuNew.orders[i]['id'],
+                                              '${HotelMenuNew.orders[i]['foodName']}',
+                                              '${HotelMenuNew.orders[i]['hotelName']}',
+                                              '${HotelMenuNew.orders[i]['foodWidth']}',
+                                              HotelMenuNew.orders[i]['price'],
+                                              HotelMenuNew.orders[i]['foodCount']+1,
+                                              HotelMenuNew.orders[i]['foodType'],
+                                              HotelMenuNew.orders[i]['imageUrl']
+                                              );
+                                          },
+                                            icon: Icon(Icons.add),
+                                            padding: EdgeInsets.zero,
+                                            iconSize: Dimensions.height10*1.2,
+                                            color: ColorClass.mainColor,),
+                                          Text('${HotelMenuNew.orders[i]['foodCount']}',style: TextStyle(color: Colors.black,fontSize: Dimensions.height10),),
+                                          IconButton(onPressed: (){
+                                            if(HotelMenuNew.orders[i]['foodCount']>0){
+                                              _updateItem(HotelMenuNew.orders[i]['id'], '${HotelMenuNew.orders[i]['foodName']}', '${HotelMenuNew.orders[i]['hotelName']}', '${HotelMenuNew.orders[i]['foodWidth']}', HotelMenuNew.orders[i]['price'], HotelMenuNew.orders[i]['foodCount']-1,HotelMenuNew.orders[i]['foodType'],HotelMenuNew.orders[i]['imageUrl']);
+                                            }
+                                            if(HotelMenuNew.orders[i]['foodCount']==1) _deleteItem(HotelMenuNew.orders[i]['id']);
+                                          },
+                                            icon: Icon(Icons.remove),
+                                            iconSize: Dimensions.height10*1.2,
+                                            color: ColorClass.mainColor,)
+                                        ],),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            ],
                           ),
                         ),
-                        onTap: (){
-                          DialogBox(context, _total);
-                          setState(() {
-                            location =null;
-                            _deliveryFee =0;
-                          });
-                        },
-                      )
-                    ],
+                      );}
+                ),
                   ),
                 ),
-              )
-            ],
-          )
-          :
-          Center(
-            child: Image.asset('image/empty_cart.png',height: Dimensions.height70*2,)
-          )
+                Container(
+                  height: Dimensions.height120*1.3,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        offset: Offset(0,-3),
+                        blurRadius: 5
+                      )
+                    ],
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(Dimensions.height10*1.5),
+                        topRight: Radius.circular(Dimensions.height10*1.5)
+                    )
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.only(top:Dimensions.height10,bottom: Dimensions.height10,right: Dimensions.height10*2,left: Dimensions.height10*2),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Column(children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Total:',style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: Dimensions.height10*1.2),),
+                              Text('$_total',style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: Dimensions.height10*1.2),),
+                            ],
+                          ),
+                        ],),
+                        GestureDetector(
+                          child: Container(
+                            height: Dimensions.height70*0.55,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: ColorClass.mainColor),
+                              borderRadius: BorderRadius.circular(20),
+                              color: Colors.white
+                            ),
+                            child: Center(
+                              child: Text('Continue',style: TextStyle(color: ColorClass.mainColor,fontSize: Dimensions.height10*1.3,fontWeight: FontWeight.bold),),
+                            ),
+                          ),
+                          onTap: (){
+                            DialogBox(context, _total);
+                            setState(() {
+                              location =null;
+                              _deliveryFee =0;
+                            });
+                          },
+                        )
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            )
+            :
+            Center(
+              child: Image.asset('image/empty_cart.png',height: Dimensions.height70*2,)
+            )
+      ),
     );
   }
   DialogBox(BuildContext context,double _total) {
@@ -520,14 +540,14 @@ TextEditingController _locationTextController = TextEditingController();
                                       'state':'NotConfirm',
                                       'dateAndTime':dateAndTime,
                                           "Orders":{
-                                             for(int i=0;i<_orders.length;++i)
+                                             for(int i=0;i<HotelMenuNew.orders.length;++i)
                                              "order$i":{
-                                      'foodName':_orders[i]['foodName'],
-                                      'hotelName':_orders[i]['hotelName'],
-                                      'foodWidth':_orders[i]['foodWidth'],
-                                      'foodType':_orders[i]['foodType'],
-                                      'foodCount':_orders[i]['foodCount'],
-                                      'price':(_orders[i]['foodCount']*_orders[i]['price'])
+                                      'foodName':HotelMenuNew.orders[i]['foodName'],
+                                      'hotelName':HotelMenuNew.orders[i]['hotelName'],
+                                      'foodWidth':HotelMenuNew.orders[i]['foodWidth'],
+                                      'foodType':HotelMenuNew.orders[i]['foodType'],
+                                      'foodCount':HotelMenuNew.orders[i]['foodCount'],
+                                      'price':(HotelMenuNew.orders[i]['foodCount']*HotelMenuNew.orders[i]['price'])
                                              }
 
                                           }
@@ -542,7 +562,7 @@ TextEditingController _locationTextController = TextEditingController();
                                       }
                                     });
                                 
-                                for(int i=0;i<_orders.length;++i)_deleteItem(_orders[i]['id']);
+                                for(int i=0;i<HotelMenuNew.orders.length;++i)_deleteItem(HotelMenuNew.orders[i]['id']);
                                 setState((){loading=false;ordered=true;});
                                 Future.delayed(Duration(seconds: 2),()=>Navigator.pop(context));
 
@@ -568,5 +588,7 @@ TextEditingController _locationTextController = TextEditingController();
           );
         }
     );
+  
   }
+  emptyDialogBox() {}
 }

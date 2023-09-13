@@ -35,7 +35,13 @@ class _UserMainState extends State<UserMain> {
       UserData.hotelDataMap = value.snapshot.value as Map;
       UserData.hotelList = UserData.hotelDataMap.keys.toList();
     });
-   
+    await data.child("ContactUs").once().then((value) {
+      Map adminDetails = value.snapshot.value as Map;
+      setState(() {
+        UserData.adminContactNumber = adminDetails["phoneNumber"];
+      });
+
+    });
         setState(() {
       loading = false;
     });
@@ -56,7 +62,7 @@ int selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    return loading? Center(child: CircularProgressIndicator(color: ColorClass.mainColor,),): Scaffold(
+    return loading &&UserData.hotelList.isEmpty? Center(child: CircularProgressIndicator(color: ColorClass.mainColor,),): Scaffold(
                 body: Stack(
         children: [
           tabBarpages[selectedIndex],
