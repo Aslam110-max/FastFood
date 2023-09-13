@@ -49,13 +49,26 @@ dependencies:
   flutter_native_splash:
   smooth_page_indicator: ^1.0.0+2
   sqflite: ^2.2.3
-
+  http: ^0.13.5
   get: ^4.6.5
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.3.2
+
+flutter_native_splash:
+  color: "#ffffff"
+  image: image/logo.jpg
+  android: true
+  ios: true
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "image/logo.jpg"
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

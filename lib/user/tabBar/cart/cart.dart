@@ -1,9 +1,11 @@
 
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
+import 'package:http/http.dart' as http;
 import '../../colors.dart';
 import '../../dimensions/dimensions.dart';
 import '../../order/order.dart';
@@ -40,6 +42,35 @@ class _CartState extends State<Cart> {
     });
    
   }
+  Future<void> sendPushNotification(String tocken, String title,String body) async {
+    try {
+      await http.post(Uri.parse('https://fcm.googleapis.com/fcm/send'),
+          headers: <String, String>{
+            'Content-Type': 'application/json',
+            'Authorization':
+            'key =AAAAPenv4LI:APA91bGL1CBHHemT7ng4U976UqatzRtnyB-SWAUXkguoaeOP79FTFWe-JzzFZ7s_gN0VZog7OihHYomukJbN03oNtd-fyJ5bJ3X2iHvY7DBk4PN4JKj5HuZoeESpdvi53XIVjxgngHgw'
+          },
+          body: jsonEncode(<String, dynamic>{
+            'priority': 'high',
+            'data': <String, dynamic>{
+              'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+              'status': 'done',
+              'body': '$body',
+              'title': '$title',
+            },
+            "notification": <String, dynamic>{
+              "title": "$title",
+              "body": "$body",
+              "android_channel_id": "Fast Food"
+            },
+            "to": tocken
+          }));
+      print('done && $tocken');
+    } catch (e) {
+      print('Error is $e');
+    }
+  }
+
   Future<void> _updateTotal()async{
     setState(() {
       _deliveryFee =0;
@@ -500,6 +531,15 @@ TextEditingController _locationTextController = TextEditingController();
                                              }
 
                                           }
+                                    });
+                                    await database.child("Admins").once().then((value) async {
+                                      if(value.snapshot.value !=null){
+                                        Map adminsMap = value.snapshot.value as Map;
+                                        List adminList = adminsMap.keys.toList();
+                                        for (int i = 0; i < adminList.length; i++) {
+                                          await sendPushNotification(adminsMap[adminList[i]]['tocken'], "New order placed!", "Check your order");
+                                        }
+                                      }
                                     });
                                 
                                 for(int i=0;i<_orders.length;++i)_deleteItem(_orders[i]['id']);

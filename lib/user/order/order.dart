@@ -219,9 +219,8 @@ class _OrderState extends State<Order> {
                       }):Center(child: Text('No Orders'),),
                   !noDeliveredOrder?
                   ListView.builder(
-                      itemCount:deliveredOrdersList.length-1 ,
+                      itemCount:deliveredOrdersList.length ,
                       itemBuilder: (context,i){
-                        deliveredOrdersList.remove('ordersCount');
                         return Padding(
                           padding: EdgeInsets.only(bottom:Dimensions.height10,left: Dimensions.height10,right: Dimensions.height10),
                           child: Container(
