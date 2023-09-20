@@ -40,7 +40,7 @@ class _HotelMenuNewState extends State<HotelMenuNew> {
             length: 2,
             child: Scaffold(
               body: NestedScrollView(
-                physics: NeverScrollableScrollPhysics(),
+                //physics: NeverScrollableScrollPhysics(),
                 headerSliverBuilder: (context,isScrolled){
                   return [
                     SliverAppBar(
@@ -64,7 +64,7 @@ class _HotelMenuNewState extends State<HotelMenuNew> {
                     actions: [
                       IconButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context)=>const Cart()));}, icon: Icon(Icons.shopping_cart_outlined,color: Colors.black,)),
                     ],
-                    backgroundColor: ColorClass.mainColor,
+                    backgroundColor: Colors.white,
                     expandedHeight: Dimensions.height210,
                     pinned: true,
                     

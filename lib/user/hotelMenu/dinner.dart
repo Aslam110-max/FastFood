@@ -120,6 +120,7 @@ class _DinnerState extends State<Dinner> {
                                       Text(" Rs.${UserData.dinnerMenuDataMap[UserData.dinnerMenuList[i]]['NormalPrice']}",style: TextStyle(color: Colors.black,fontSize: Dimensions.height10))
                                     ],
                                   )),
+                                  if(UserData.dinnerMenuDataMap[UserData.dinnerMenuList[i]]['FullPrice']!=null)
                                  SizedBox(width: Dimensions.width120*1.5,
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
